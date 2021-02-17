@@ -37,14 +37,28 @@ const Deck: React.FC<Props> = ({ DATA, renderCard }) => {
       <FlatList
         data={DATA}
         keyExtractor={i => i.id.toString()}
-        renderItem={({ item }) => (
-          <Animated.View
-            style={position.getLayout()}
-            {...panResponder.panHandlers}
-          >
-            {renderCard(item)}
-          </Animated.View>
-        )}
+        renderItem={({ item, index }) =>
+          index === 0 ? (
+            <Animated.View
+              style={{
+                ...position.getLayout(),
+                transform: [
+                  {
+                    rotate: position.x.interpolate({
+                      inputRange: [-500, 0, 500],
+                      outputRange: ["-120deg", "0deg", "120deg"]
+                    })
+                  }
+                ]
+              }}
+              {...panResponder.panHandlers}
+            >
+              {renderCard(item)}
+            </Animated.View>
+          ) : (
+            renderCard(item)
+          )
+        }
       />
     </View>
   );
