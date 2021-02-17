@@ -64,7 +64,7 @@ export default function App() {
         />
         <Card.Divider />
         <Text>{item.text}</Text>
-        <Button title="Tap Here" onPress={() => {}} />
+        <Button title="View Now" onPress={() => {}} />
       </Card>
     );
   };

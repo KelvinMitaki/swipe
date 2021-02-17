@@ -1,5 +1,5 @@
-import React from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+import { FlatList, PanResponder, StyleSheet, Text, View } from "react-native";
 
 interface Props {
   DATA: {
@@ -11,8 +11,17 @@ interface Props {
 }
 
 const Deck: React.FC<Props> = ({ DATA, renderCard }) => {
+  const [panResponder] = useState(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderMove: (e, gesture) => {
+        console.log(gesture);
+      },
+      onPanResponderRelease: () => {}
+    })
+  );
   return (
-    <View>
+    <View {...panResponder.panHandlers}>
       <FlatList
         data={DATA}
         keyExtractor={i => i.id.toString()}
