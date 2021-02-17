@@ -1,10 +1,23 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 
-const Deck = () => {
+interface Props {
+  DATA: {
+    id: number;
+    text: string;
+    uri: string;
+  }[];
+  renderCard: (item: { id: number; text: string; uri: string }) => JSX.Element;
+}
+
+const Deck: React.FC<Props> = ({ DATA, renderCard }) => {
   return (
     <View>
-      <Text>Deck Deck;</Text>
+      <FlatList
+        data={DATA}
+        keyExtractor={i => i.id.toString()}
+        renderItem={({ item }) => renderCard(item)}
+      />
     </View>
   );
 };
