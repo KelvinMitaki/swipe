@@ -19,7 +19,7 @@ interface Props {
 }
 
 const Deck: React.FC<Props> = ({ DATA, renderCard }) => {
-  const [animated] = useState<Animated.ValueXY>(
+  const [position] = useState<Animated.ValueXY>(
     new Animated.ValueXY({ x: 0, y: 0 })
   );
   const [panResponder] = useState<PanResponderInstance>(
@@ -27,21 +27,21 @@ const Deck: React.FC<Props> = ({ DATA, renderCard }) => {
       onStartShouldSetPanResponder: () => true,
       onPanResponderMove: (e, gesture) => {
         // console.log(gesture);
-        Animated.spring(animated, {
-          toValue: { x: gesture.dx, y: gesture.dy },
-          useNativeDriver: false
-        }).start();
+        position.setValue({ x: gesture.dx, y: gesture.dy });
       },
       onPanResponderRelease: () => {}
     })
   );
   return (
-    <View {...panResponder.panHandlers}>
+    <View>
       <FlatList
         data={DATA}
         keyExtractor={i => i.id.toString()}
         renderItem={({ item }) => (
-          <Animated.View {...animated.getLayout()}>
+          <Animated.View
+            style={position.getLayout()}
+            {...panResponder.panHandlers}
+          >
             {renderCard(item)}
           </Animated.View>
         )}
