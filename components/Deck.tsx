@@ -92,7 +92,7 @@ const Deck: React.FC<Props> = ({ DATA, renderCard }) => {
         </Animated.View>
       );
     }
-    return renderCard(item);
+    return <View style={styles.card}>{renderCard(item)}</View>;
   };
   return (
     <View>
@@ -109,7 +109,7 @@ const Deck: React.FC<Props> = ({ DATA, renderCard }) => {
             <Card.Divider />
             <Text>There's No More Content Here</Text>
             <Card.Divider />
-            <Button title="Get More" onPress={() => {}} />
+            <Button title="Get More" onPress={() => setStateIndex(0)} />
           </Card>
         </View>
       )}
@@ -125,5 +125,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     height: "100%",
     width: "100%"
+  },
+  card: {
+    position: "absolute"
   }
 });
