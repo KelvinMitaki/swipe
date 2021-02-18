@@ -20,7 +20,7 @@ interface Props {
 }
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
-
+const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.25;
 const Deck: React.FC<Props> = ({ DATA, renderCard }) => {
   const [position] = useState<Animated.ValueXY>(
     new Animated.ValueXY({ x: 0, y: 0 })
@@ -30,9 +30,26 @@ const Deck: React.FC<Props> = ({ DATA, renderCard }) => {
       onStartShouldSetPanResponder: () => true,
       onPanResponderMove: (e, gesture) => {
         // console.log(gesture);
-        position.setValue({ x: gesture.dx, y: gesture.dy });
+        position.setValue({ x: gesture.dx, y: 0 });
       },
-      onPanResponderRelease: () => {}
+      onPanResponderRelease: (e, gesture) => {
+        if (gesture.dx > SWIPE_THRESHOLD) {
+          return Animated.timing(position, {
+            toValue: { x: SCREEN_WIDTH, y: 0 },
+            useNativeDriver: false
+          }).start();
+        }
+        if (gesture.dx < -SWIPE_THRESHOLD) {
+          return Animated.timing(position, {
+            toValue: { x: -SCREEN_WIDTH, y: 0 },
+            useNativeDriver: false
+          }).start();
+        }
+        Animated.spring(position, {
+          toValue: { x: 0, y: 0 },
+          useNativeDriver: false
+        }).start();
+      }
     })
   );
   return (
