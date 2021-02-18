@@ -10,6 +10,7 @@ import {
   Text,
   View
 } from "react-native";
+import { Button, Card } from "react-native-elements";
 
 interface Props {
   DATA: {
@@ -95,15 +96,34 @@ const Deck: React.FC<Props> = ({ DATA, renderCard }) => {
   };
   return (
     <View>
-      <FlatList
-        data={DATA}
-        keyExtractor={i => i.id.toString()}
-        renderItem={data => renderList(data)}
-      />
+      {DATA.length > stateindex ? (
+        <FlatList
+          data={DATA}
+          keyExtractor={i => i.id.toString()}
+          renderItem={data => renderList(data)}
+        />
+      ) : (
+        <View style={styles.nocards}>
+          <Card>
+            <Card.Title>All Done</Card.Title>
+            <Card.Divider />
+            <Text>There's No More Content Here</Text>
+            <Card.Divider />
+            <Button title="Get More" onPress={() => {}} />
+          </Card>
+        </View>
+      )}
     </View>
   );
 };
 
 export default Deck;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  nocards: {
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
+    width: "100%"
+  }
+});
