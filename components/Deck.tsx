@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   Animated,
+  Dimensions,
   FlatList,
   PanResponder,
   PanResponderInstance,
@@ -17,6 +18,8 @@ interface Props {
   }[];
   renderCard: (item: { id: number; text: string; uri: string }) => JSX.Element;
 }
+
+const SCREEN_WIDTH = Dimensions.get("window").width;
 
 const Deck: React.FC<Props> = ({ DATA, renderCard }) => {
   const [position] = useState<Animated.ValueXY>(
@@ -45,7 +48,7 @@ const Deck: React.FC<Props> = ({ DATA, renderCard }) => {
                 transform: [
                   {
                     rotate: position.x.interpolate({
-                      inputRange: [-500, 0, 500],
+                      inputRange: [-SCREEN_WIDTH * 1.5, 0, SCREEN_WIDTH * 1.5],
                       outputRange: ["-120deg", "0deg", "120deg"]
                     })
                   }
