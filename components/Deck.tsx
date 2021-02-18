@@ -3,6 +3,7 @@ import {
   Animated,
   Dimensions,
   FlatList,
+  ListRenderItemInfo,
   PanResponder,
   PanResponderInstance,
   StyleSheet,
@@ -25,6 +26,7 @@ const Deck: React.FC<Props> = ({ DATA, renderCard }) => {
   const [position] = useState<Animated.ValueXY>(
     new Animated.ValueXY({ x: 0, y: 0 })
   );
+  const [stateindex, setStateIndex] = useState<number>(0);
   const [panResponder] = useState<PanResponderInstance>(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -36,14 +38,16 @@ const Deck: React.FC<Props> = ({ DATA, renderCard }) => {
         if (gesture.dx > SWIPE_THRESHOLD) {
           return Animated.timing(position, {
             toValue: { x: SCREEN_WIDTH, y: 0 },
-            useNativeDriver: false
-          }).start();
+            useNativeDriver: false,
+            duration: 300
+          }).start(() => onSwipeComplete("right"));
         }
         if (gesture.dx < -SWIPE_THRESHOLD) {
           return Animated.timing(position, {
             toValue: { x: -SCREEN_WIDTH, y: 0 },
-            useNativeDriver: false
-          }).start();
+            useNativeDriver: false,
+            duration: 300
+          }).start(() => onSwipeComplete("left"));
         }
         Animated.spring(position, {
           toValue: { x: 0, y: 0 },
@@ -52,33 +56,49 @@ const Deck: React.FC<Props> = ({ DATA, renderCard }) => {
       }
     })
   );
+  const onSwipeComplete = (direction: "right" | "left") => {
+    setStateIndex(i => i + 1);
+    position.setValue({ x: 0, y: 0 });
+  };
+  const renderList = ({
+    item,
+    index
+  }: ListRenderItemInfo<{
+    id: number;
+    text: string;
+    uri: string;
+  }>) => {
+    if (stateindex > index) {
+      return null;
+    }
+    if (index === stateindex) {
+      return (
+        <Animated.View
+          style={{
+            ...position.getLayout(),
+            transform: [
+              {
+                rotate: position.x.interpolate({
+                  inputRange: [-SCREEN_WIDTH * 1.5, 0, SCREEN_WIDTH * 1.5],
+                  outputRange: ["-120deg", "0deg", "120deg"]
+                })
+              }
+            ]
+          }}
+          {...panResponder.panHandlers}
+        >
+          {renderCard(item)}
+        </Animated.View>
+      );
+    }
+    return renderCard(item);
+  };
   return (
     <View>
       <FlatList
         data={DATA}
         keyExtractor={i => i.id.toString()}
-        renderItem={({ item, index }) =>
-          index === 0 ? (
-            <Animated.View
-              style={{
-                ...position.getLayout(),
-                transform: [
-                  {
-                    rotate: position.x.interpolate({
-                      inputRange: [-SCREEN_WIDTH * 1.5, 0, SCREEN_WIDTH * 1.5],
-                      outputRange: ["-120deg", "0deg", "120deg"]
-                    })
-                  }
-                ]
-              }}
-              {...panResponder.panHandlers}
-            >
-              {renderCard(item)}
-            </Animated.View>
-          ) : (
-            renderCard(item)
-          )
-        }
+        renderItem={data => renderList(data)}
       />
     </View>
   );
